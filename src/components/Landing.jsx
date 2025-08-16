@@ -1,16 +1,33 @@
 import React, { useState } from "react";
 import { Twitter, Github, Code2, Copy, Eye, Mail, Badge } from "lucide-react";
 
+// 1. Set your Google Apps Script Web App URL here:
+const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyX_U5_iLL7KNpSMb6bc5cfQs8IgpXOiYGP-FIu0Djl7lb5EYQ7xnRkqepcq1FLj8Bi/exec";
 const LandingHero = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [clicked, setClicked] = useState(false); // For button effect
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) return;
-    console.log("Collected email:", email); // 🔗 send to backend / Mailchimp / Supabase
-    setSubmitted(true);
-    setEmail("");
+    setClicked(true); // Start effect
+    setTimeout(() => setClicked(false), 200); // Remove effect after 200ms
+    try {
+      // Send email to Google Sheets via Apps Script
+      await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+        method: "POST",
+        mode: "no-cors", // Google Apps Script requires no-cors for public endpoints
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+      setSubmitted(true);
+      setEmail("");
+    } catch (err) {
+      alert("There was an error submitting your email.");
+    }
   };
 
   return (
@@ -79,7 +96,11 @@ const LandingHero = () => {
             </div>
             <button
               type="submit"
-              className="px-6 py-3 bg-violet-600 text-white font-semibold rounded-lg hover:bg-violet-700 transition w-full sm:w-auto"
+              className={`px-6 py-3 bg-violet-600 text-white font-semibold rounded-lg transition w-full sm:w-auto
+                hover:bg-violet-700
+                ${clicked ? "scale-105 bg-green-500 shadow-lg" : ""}
+              `}
+              style={{ transition: "transform 0.15s, background 0.15s, box-shadow 0.15s" }}
             >
               Join Waitlist
             </button>
@@ -97,3 +118,16 @@ const LandingHero = () => {
 };
 
 export default LandingHero;
+
+/*
+------------------------------------------
+Google Apps Script code for Google Sheets:
+
+function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var data = JSON.parse(e.postData.contents);
+  sheet.appendRow([new Date(), data.email]);
+  return ContentService.createTextOutput("Success");
+}
+
+*/
