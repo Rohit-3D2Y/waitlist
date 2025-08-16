@@ -91,15 +91,7 @@ const LandingHero = () => {
         )}
       </main>
 
-      {/* Floating Icons */}
-      <div className="absolute bottom-8 right-8 flex flex-col items-center gap-4 text-gray-400">
-        <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-600 hover:text-white hover:border-white transition">
-          ↓
-        </button>
-        <button className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-600 hover:text-white hover:border-white transition">
-          ♡
-        </button>
-      </div>
+      
     </div>
   );
 };
