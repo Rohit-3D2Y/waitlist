@@ -69,11 +69,11 @@ const LandingHero = () => {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-10">
           <button className="flex items-center gap-2 px-5 py-3 bg-black/50 border border-gray-700 rounded-xl hover:bg-black/70 transition">
             <Copy className="w-4 h-4 text-purple-400" />
-            One-Click Copy
+            One-Click Copy and Quality Components
           </button>
           <button className="flex items-center gap-2 px-5 py-3 bg-black/50 border border-gray-700 rounded-xl hover:bg-black/70 transition">
             <Badge className="w-4 h-4 text-pink-400" />
-            500+ Components
+            Lots of Components and no external downloads or dependencies 
           </button>
         </div>
 
