@@ -1,32 +1,41 @@
 import React, { useState } from "react";
-import { Twitter, Github, Code2, Copy, Eye, Mail, Badge } from "lucide-react";
+import { Copy, Mail, Badge, Loader2 } from "lucide-react";
 
 // 1. Set your Google Apps Script Web App URL here:
-const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyX_U5_iLL7KNpSMb6bc5cfQs8IgpXOiYGP-FIu0Djl7lb5EYQ7xnRkqepcq1FLj8Bi/exec";
+const GOOGLE_SHEET_WEBAPP_URL =
+  "https://script.google.com/macros/s/AKfycbyX_U5_iLL7KNpSMb6bc5cfQs8IgpXOiYGP-FIu0Djl7lb5EYQ7xnRkqepcq1FLj8Bi/exec";
+
 const LandingHero = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [clicked, setClicked] = useState(false); // For button effect
+  const [clicked, setClicked] = useState(false); // Button effect
+  const [loading, setLoading] = useState(false); // Loader
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email) return;
-    setClicked(true); // Start effect
-    setTimeout(() => setClicked(false), 200); // Remove effect after 200ms
+    if (!email || loading) return;
+
+    setClicked(true);
+    setTimeout(() => setClicked(false), 200);
+    setLoading(true);
+
     try {
       // Send email to Google Sheets via Apps Script
       await fetch(GOOGLE_SHEET_WEBAPP_URL, {
         method: "POST",
-        mode: "no-cors", // Google Apps Script requires no-cors for public endpoints
+        mode: "no-cors",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email }),
       });
+
       setSubmitted(true);
       setEmail("");
     } catch (err) {
       alert("There was an error submitting your email.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,7 +50,6 @@ const LandingHero = () => {
           <div className="w-6 h-6 bg-violet-600 rounded-md"></div>
           <h1 className="font-bold text-lg">Nexacrft</h1>
         </div>
-      
       </header>
 
       {/* Content */}
@@ -53,7 +61,8 @@ const LandingHero = () => {
 
         {/* Headings */}
         <h1 className="text-4xl sm:text-6xl font-semibold tracking-tighter mb-4">
-          We’re building <span className="text-violet-500">Something Exciting</span>
+          We’re building{" "}
+          <span className="text-violet-500">Something Exciting</span>
         </h1>
         <h2 className="text-2xl sm:text-4xl font-semibold text-gray-300 mb-6">
           A React + Tailwind Component Library launching on 30th August
@@ -73,7 +82,7 @@ const LandingHero = () => {
           </button>
           <button className="flex items-center gap-2 px-5 py-3 bg-black/50 border border-gray-700 rounded-xl hover:bg-black/70 transition">
             <Badge className="w-4 h-4 text-pink-400" />
-            Lots of Components and no external downloads or dependencies 
+            Lots of Components and no external downloads or dependencies
           </button>
         </div>
 
@@ -92,17 +101,32 @@ const LandingHero = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
             <button
               type="submit"
-              className={`px-6 py-3 bg-violet-600 text-white font-semibold rounded-lg transition w-full sm:w-auto
-                hover:bg-violet-700
+              disabled={loading}
+              className={`px-6 py-3 flex items-center justify-center gap-2 font-semibold rounded-lg transition w-full sm:w-auto
+                ${
+                  loading
+                    ? "bg-gray-600 cursor-not-allowed"
+                    : "bg-violet-600 hover:bg-violet-700"
+                }
                 ${clicked ? "scale-105 bg-green-500 shadow-lg" : ""}
               `}
-              style={{ transition: "transform 0.15s, background 0.15s, box-shadow 0.15s" }}
+              style={{
+                transition:
+                  "transform 0.15s, background 0.15s, box-shadow 0.15s",
+              }}
             >
-              Join Waitlist
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" /> Submitting...
+                </>
+              ) : (
+                "Join Waitlist"
+              )}
             </button>
           </form>
         ) : (
@@ -111,23 +135,8 @@ const LandingHero = () => {
           </p>
         )}
       </main>
-
-      
     </div>
   );
 };
 
 export default LandingHero;
-
-/*
-------------------------------------------
-Google Apps Script code for Google Sheets:
-
-function doPost(e) {
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-  var data = JSON.parse(e.postData.contents);
-  sheet.appendRow([new Date(), data.email]);
-  return ContentService.createTextOutput("Success");
-}
-
-*/
