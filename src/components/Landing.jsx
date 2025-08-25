@@ -65,7 +65,7 @@ const LandingHero = () => {
           <span className="text-violet-500">Something Exciting</span>
         </h1>
         <h2 className="text-2xl sm:text-4xl font-semibold text-gray-300 mb-6">
-          A React + Tailwind Component Library launching on 30th August
+          A React + Tailwind Component Library launching on 27th August
         </h2>
 
         {/* Description */}
